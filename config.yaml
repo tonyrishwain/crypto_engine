@@ -1,0 +1,30 @@
+# config.yaml
+coinbase:
+  api_key: YOUR_API_KEY
+  api_secret: YOUR_API_SECRET
+  # Add other Coinbase settings if needed
+
+trading:
+  pair: BTC-USD # Example trading pair
+  # Add other trading parameters like trade size, frequency, etc.
+
+strategies:
+  moving_average_crossover:
+    enabled: true
+    short_window: 10
+    long_window: 50
+  # Add other strategies here
+  rsi:
+    enabled: false
+    period: 14
+    overbought_threshold: 70
+    oversold_threshold: 30
+
+backtesting:
+  start_date: "2023-01-01"
+  end_date: "2024-01-01"
+  initial_capital: 10000.0
+  data_source: yfinance # Or specify another source like a CSV file path
+
+# General settings
+log_level: INFO

@@ -1,0 +1,11 @@
+requests
+PyYAML
+pandas
+numpy
+schedule
+# Using python-coinbase for the standard Coinbase API (v2)
+# If Coinbase Pro (Advanced Trade) is needed, we might switch to ccxt or another library
+coinbase
+# yfinance for potential free historical data, though crypto coverage might vary
+yfinance
+matplotlib # For plotting results/signals
