@@ -1,9 +1,10 @@
-# src/data_fetcher.py
-import yfinance as yf
 import pandas as pd
-from typing import Optional
+import yfinance as yf
 
-def fetch_historical_data(ticker: str, start_date: str, end_date: str, interval: str = '1d') -> Optional[pd.DataFrame]:
+
+def fetch_historical_data(
+    ticker: str, start_date: str, end_date: str, interval: str = "1d"
+) -> pd.DataFrame | None:
     """
     Fetches historical market data for a given ticker using yfinance.
 
@@ -20,18 +21,29 @@ def fetch_historical_data(ticker: str, start_date: str, end_date: str, interval:
                                 or None if fetching fails.
                                 Index is Datetime.
     """
-    print(f"Fetching data for {ticker} from {start_date} to {end_date} with interval {interval}...")
+    print(
+        f"Fetching data for {ticker} from {start_date} to {end_date} with interval {interval}..."
+    )
     try:
         # Explicitly type hint the expected return type for clarity, though yfinance lacks stubs
         # Set auto_adjust=False to ensure 'Close' column is present instead of just 'Adj Close'
-        data: Optional[pd.DataFrame] = yf.download(ticker, start=start_date, end=end_date, interval=interval, progress=False, auto_adjust=False)
+        data: pd.DataFrame | None = yf.download(
+            ticker,
+            start=start_date,
+            end=end_date,
+            interval=interval,
+            progress=False,
+            auto_adjust=False,
+        )
 
         # Check for None first, then empty
         if data is None:
-             print(f"Warning: yf.download returned None for {ticker}.")
-             return None
+            print(f"Warning: yf.download returned None for {ticker}.")
+            return None
         if data.empty:
-            print(f"Warning: No data found for {ticker} in the specified date range or interval (DataFrame is empty).")
+            print(
+                f"Warning: No data found for {ticker} in the specified date range or interval (DataFrame is empty)."
+            )
             return None
 
         # Ensure standard column names (lowercase), handling potential tuples (MultiIndex)
@@ -39,24 +51,28 @@ def fetch_historical_data(ticker: str, start_date: str, end_date: str, interval:
         for col in data.columns:
             if isinstance(col, tuple):
                 # Join tuple elements (usually strings like ('Adj Close', ''))
-                col_str = '_'.join(filter(None, map(str, col))).strip('_') # Filter out empty strings from tuple
+                col_str = "_".join(filter(None, map(str, col))).strip(
+                    "_"
+                )  # Filter out empty strings from tuple
             elif isinstance(col, str):
                 col_str = col
             else:
-                col_str = str(col) # Fallback for other types
+                col_str = str(col)  # Fallback for other types
 
             # Standardize: lowercase, replace space with underscore
-            standardized_col = col_str.lower().replace(' ', '_')
+            standardized_col = col_str.lower().replace(" ", "_")
 
             # Remove ticker suffix if present (e.g., '_btc-usd')
             ticker_suffix = f"_{ticker.lower()}"
             if standardized_col.endswith(ticker_suffix):
-                standardized_col = standardized_col[:-len(ticker_suffix)]
+                standardized_col = standardized_col[: -len(ticker_suffix)]
 
             new_cols.append(standardized_col)
         data.columns = new_cols
 
-        print(f"Successfully fetched {len(data)} data points.") # len() is safe now due to None/empty checks
+        print(
+            f"Successfully fetched {len(data)} data points."
+        )  # len() is safe now due to None/empty checks
         # Removed debug print
         return data
 
@@ -64,11 +80,12 @@ def fetch_historical_data(ticker: str, start_date: str, end_date: str, interval:
         print(f"Error fetching data for {ticker}: {e}")
         return None
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     # Example usage: Fetch daily BTC-USD data for 2023
-    test_ticker = 'BTC-USD'
-    test_start = '2023-01-01'
-    test_end = '2024-01-01'
+    test_ticker = "BTC-USD"
+    test_start = "2023-01-01"
+    test_end = "2024-01-01"
 
     historical_data = fetch_historical_data(test_ticker, test_start, test_end)
 
